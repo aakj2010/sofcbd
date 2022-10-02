@@ -14,7 +14,7 @@ const DB = "sofc"
 app.use(express.json())
 app.use(cors({
     // origin: 'http://localhost:3000'
-    origin:'https://superb-sprite-48c5a0.netlify.app'
+    origin: 'https://superb-sprite-48c5a0.netlify.app'
 }))
 
 
