@@ -274,6 +274,6 @@ app.post("/login", async function (req, res) {
 
 
 
-app.listen(3100, () => {
+app.listen(Process.env.PORT || 3100, () => {
     console.log("Server is Running...!");
 })
