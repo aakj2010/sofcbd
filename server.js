@@ -201,6 +201,46 @@ app.get("/answer/:id", async function (req, res) {
 
 })
 
+// Post Answer
+app.put("/answer/:id", async function (req, res) {
+    // let userId = req.params.id;
+    // let userIndex = users.findIndex((item) => item.id == userId);
+
+    // if (userIndex != -1) {
+    //     Object.keys(req.body).forEach((item) => {
+    //         users[userIndex][item] = req.body[item]
+    //     })
+
+    //     res.json({ message: "done" })
+    // } else {
+    //     res.json({ message: "User Not found" })
+    // }
+
+    try {
+        // Step 1 : Create a Connection between Nodejs and MongoDb
+        const connection = await mongoClient.connect(URL)
+   
+        // Step 2 : Select the db
+        const db = connection.db(DB)
+    
+        // Step 3 : Select the Collections
+        // Step 4 : Do the Operations (Create, Update, read, delete)
+        let answer =   await db.collection("questions").findOneAndUpdate({_id: mongodb.ObjectId(req.params.id)},{$set:req.body});
+        
+    
+        // Step 5 : Close the Connection
+        await connection.close()
+
+        res.json(answer);
+    
+      } catch (error) {
+       //  If any error throw error
+       res.status(500).json({message:"Something went Wrong"})
+      }
+
+
+})
+
 
 
 
