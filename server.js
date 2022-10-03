@@ -3,6 +3,7 @@ const cors = require("cors")
 const mongodb = require("mongodb")
 const dotenv = require("dotenv").config()
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 // const { hashGenerate } = require("./helpers/hashing");
 
 const app = express();
@@ -17,10 +18,27 @@ app.use(cors({
     origin: 'https://superb-sprite-48c5a0.netlify.app'
 }))
 
+let authenticate = (req, res, next) => {
+    console.log(req.headers.authorization);
+    if(req.headers.authorization){
+        try {
+            let decode = jwt.verify(req.headers.authorization, process.env.SECRET)
+        if(decode){
+            next();
+        }
+        } catch (error) {
+            res.status(401).json({ message: "Unauthorized" })
+        }
+    }else{
+        res.status(401).json({ message: "Unauthorized" })
+    }
+   
+}
+
 
 
 // get All users
-app.get("/users", async function (req, res) {
+app.get("/users", authenticate, async function (req, res) {
     // let qParams = req.query
     // console.log(qParams);
 
@@ -136,33 +154,33 @@ app.post("/signup", async function (req, res) {
 });
 
 // Post Questions method
-app.post("/postquestions",async function (req, res) {
+app.post("/postquestions", async function (req, res) {
 
     try {
-      // Step 1 : Create a Connection between Nodejs and MongoDb
-      const connection = await mongoClient.connect(URL)
- 
-      // Step 2 : Select the db
-      const db = connection.db(DB)
-  
-      // Step 3 : Select the Collections
-      // Step 4 : Do the Operations (Create, Update, read, delete)
-      await db.collection("questions").insertOne(req.body)
-  
-      // Step 5 : Close the Connection
-      await connection.close()
-  
-      res.status(200).json({message:"Your Question Added Successfully "})
+        // Step 1 : Create a Connection between Nodejs and MongoDb
+        const connection = await mongoClient.connect(URL)
+
+        // Step 2 : Select the db
+        const db = connection.db(DB)
+
+        // Step 3 : Select the Collections
+        // Step 4 : Do the Operations (Create, Update, read, delete)
+        await db.collection("questions").insertOne(req.body)
+
+        // Step 5 : Close the Connection
+        await connection.close()
+
+        res.status(200).json({ message: "Your Question Added Successfully " })
     } catch (error) {
-     //  If any error throw error
-     res.status(500).json({message:"Something went Wrong"})
+        //  If any error throw error
+        res.status(500).json({ message: "Something went Wrong" })
     }
- 
-     // console.log(req.body);
-     // req.body.id = users.length + 1;
-     // users.push(req.body);
-     // res.json({ message: "User Created Successfully" });
- });
+
+    // console.log(req.body);
+    // req.body.id = users.length + 1;
+    // users.push(req.body);
+    // res.json({ message: "User Created Successfully" });
+});
 
 //  get Questions By Id
 app.get("/answer/:id", async function (req, res) {
@@ -178,24 +196,24 @@ app.get("/answer/:id", async function (req, res) {
     try {
         // Step 1 : Create a Connection between Nodejs and MongoDb
         const connection = await mongoClient.connect(URL)
-   
+
         // Step 2 : Select the db
         const db = connection.db(DB)
-    
+
         // Step 3 : Select the Collections
         // Step 4 : Do the Operations (Create, Update, read, delete)
-        let answer =   await db.collection("questions").findOne({_id: mongodb.ObjectId(req.params.id) });
-        
-    
+        let answer = await db.collection("questions").findOne({ _id: mongodb.ObjectId(req.params.id) });
+
+
         // Step 5 : Close the Connection
         await connection.close()
 
         res.json(answer);
-    
-      } catch (error) {
-       //  If any error throw error
-       res.status(500).json({message:"Something went Wrong"})
-      }
+
+    } catch (error) {
+        //  If any error throw error
+        res.status(500).json({ message: "Something went Wrong" })
+    }
 
 
 
@@ -219,20 +237,20 @@ app.get("/answer/:id", async function (req, res) {
 //     try {
 //         // Step 1 : Create a Connection between Nodejs and MongoDb
 //         const connection = await mongoClient.connect(URL)
-   
+
 //         // Step 2 : Select the db
 //         const db = connection.db(DB)
-    
+
 //         // Step 3 : Select the Collections
 //         // Step 4 : Do the Operations (Create, Update, read, delete)
 //         let answer =   await db.collection("questions").findOneAndUpdate({_id: mongodb.ObjectId(req.params.id)},{$set:req.body});
-        
-    
+
+
 //         // Step 5 : Close the Connection
 //         await connection.close()
 
 //         res.json(answer);
-    
+
 //       } catch (error) {
 //        //  If any error throw error
 //        res.status(500).json({message:"Something went Wrong"})
@@ -240,13 +258,6 @@ app.get("/answer/:id", async function (req, res) {
 
 
 // })
-
-
-
-
-
-
-
 
 
 app.post("/login", async function (req, res) {
@@ -259,7 +270,9 @@ app.post("/login", async function (req, res) {
         if (user) {
             let compare = await bcrypt.compare(req.body.password, user.password);
             if (compare) {
-                res.json({ message: "Logged in Successfully" })
+                let token = jwt.sign({ _id: user._id }, process.env.SECRET, { expiresIn: "1h" });
+
+                res.json({ token })
             } else {
                 res.json({ message: "Username / Password is Wrong" })
             }
