@@ -14,8 +14,8 @@ const DB = "sofc"
 
 app.use(express.json())
 app.use(cors({
-    // origin: 'http://localhost:3000'
-    origin: 'https://superb-sprite-48c5a0.netlify.app'
+    origin: 'http://localhost:3000'
+    // origin: 'https://superb-sprite-48c5a0.netlify.app'
 }))
 
 let authenticate = (req, res, next) => {
@@ -77,7 +77,7 @@ app.get("/users", authenticate, async function (req, res) {
 });
 
 // get all Questions
-app.get("/questions", async function (req, res) {
+app.get("/questions", authenticate, async function (req, res) {
     // let qParams = req.query
     // console.log(qParams);
 
@@ -117,7 +117,7 @@ app.get("/questions", async function (req, res) {
 
 
 // Post user method
-app.post("/signup", async function (req, res) {
+app.post("/signup",  async function (req, res) {
     // const hashPassword = await hashGenerate(req.body.password);
 
     try {
@@ -154,7 +154,7 @@ app.post("/signup", async function (req, res) {
 });
 
 // Post Questions method
-app.post("/postquestions", async function (req, res) {
+app.post("/postquestions", authenticate, async function (req, res) {
 
     try {
         // Step 1 : Create a Connection between Nodejs and MongoDb
@@ -183,7 +183,7 @@ app.post("/postquestions", async function (req, res) {
 });
 
 //  get Questions By Id
-app.get("/answer/:id", async function (req, res) {
+app.get("/answer/:id", authenticate, async function (req, res) {
     // let userId = req.params.id;
     // let user = users.find((item) => item.id == userId)
     // console.log(user);
@@ -270,7 +270,7 @@ app.post("/login", async function (req, res) {
         if (user) {
             let compare = await bcrypt.compare(req.body.password, user.password);
             if (compare) {
-                let token = jwt.sign({ _id: user._id }, process.env.SECRET, { expiresIn: "1h" });
+                let token = jwt.sign({ _id: user._id }, process.env.SECRET, { expiresIn: "3h" });
 
                 res.json({ token })
             } else {
