@@ -6,6 +6,9 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 // const { hashGenerate } = require("./helpers/hashing");
 
+const PORT = process.env.PORT || 3100;
+
+
 const app = express();
 const mongoClient = mongodb.MongoClient
 // const URL = "mongodb://localhost:27017"
@@ -14,25 +17,26 @@ const DB = "sofc"
 
 app.use(express.json())
 app.use(cors({
-    // origin: 'http://localhost:3000'
-    origin: 'https://superb-sprite-48c5a0.netlify.app'
+    origin: "*",
+    credentials: true
+
 }))
 
 let authenticate = (req, res, next) => {
     console.log(req.headers.authorization);
-    if(req.headers.authorization){
+    if (req.headers.authorization) {
         try {
             let decode = jwt.verify(req.headers.authorization, process.env.SECRET)
-        if(decode){
-            next();
-        }
+            if (decode) {
+                next();
+            }
         } catch (error) {
             res.status(401).json({ message: "Unauthorized" })
         }
-    }else{
+    } else {
         res.status(401).json({ message: "Unauthorized" })
     }
-   
+
 }
 
 
@@ -117,7 +121,7 @@ app.get("/questions", authenticate, async function (req, res) {
 
 
 // Post user method
-app.post("/signup",  async function (req, res) {
+app.post("/signup", async function (req, res) {
     // const hashPassword = await hashGenerate(req.body.password);
 
     try {
@@ -287,6 +291,4 @@ app.post("/login", async function (req, res) {
 
 
 
-app.listen(process.env.PORT || 3100, () => {
-    console.log("Server is Running...!");
-})
+app.listen(PORT, () => console.log(`Server is Running on port ${PORT}`));
