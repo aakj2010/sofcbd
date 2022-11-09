@@ -4,7 +4,6 @@ const mongodb = require("mongodb")
 const dotenv = require("dotenv").config()
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-// const { hashGenerate } = require("./helpers/hashing");
 
 const PORT = process.env.PORT || 3100;
 
