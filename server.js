@@ -41,16 +41,6 @@ let authenticate = (req, res, next) => {
 
 // get All users
 app.get("/users", authenticate, async function (req, res) {
-    // let qParams = req.query
-    // console.log(qParams);
-
-    // let resUser = [] 
-    // for(let i=parseInt(req.query.offset); i<parseInt(req.query.offset) + parseInt(req.query.limit);i++ ){
-    //     if(users[index]){
-    //         resUser.push(users[index])
-    //     }
-    // }
-
 
     try {
         // Step 1 : Create a Connection between Nodejs and MongoDb
@@ -80,16 +70,6 @@ app.get("/users", authenticate, async function (req, res) {
 
 // get all Questions
 app.get("/questions", authenticate, async function (req, res) {
-    // let qParams = req.query
-    // console.log(qParams);
-
-    // let resUser = [] 
-    // for(let i=parseInt(req.query.offset); i<parseInt(req.query.offset) + parseInt(req.query.limit);i++ ){
-    //     if(users[index]){
-    //         resUser.push(users[index])
-    //     }
-    // }
-
 
     try {
         // Step 1 : Create a Connection between Nodejs and MongoDb
@@ -186,14 +166,6 @@ app.post("/postquestions", authenticate, async function (req, res) {
 
 //  get Questions By Id
 app.get("/answer/:id", authenticate, async function (req, res) {
-    // let userId = req.params.id;
-    // let user = users.find((item) => item.id == userId)
-    // console.log(user);
-    // if (user) {
-    //     res.json(user)
-    // } else {
-    //     res.json({ message: "User not found" })
-    // }
 
     try {
         // Step 1 : Create a Connection between Nodejs and MongoDb
