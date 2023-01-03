@@ -18,7 +18,6 @@ app.use(express.json())
 app.use(cors({
     origin: "*",
     credentials: true
-
 }))
 
 let authenticate = (req, res, next) => {
